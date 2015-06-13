@@ -23,14 +23,15 @@ void* wasd(void* arg) {
 }
 
 void odomPubCallback(const nav_msgs::Odometry::ConstPtr& msg) {
-
 }
 
 
 void depthCallback(const sensor_msgs::Image::ConstPtr& msg) {
-    cv::imshow("My window", matrix);
-    cv::imshow("My window", cv_bridge::toCvShare(msg, "bgr8")->image);
-    cout << "####" << endl;
+    cv_bridge::CvImageConstPtr cvImg = cv_bridge::toCvShare(msg);
+    // cout << cvImg->image.size() << endl;
+    cv::Mat mat;
+    cv::convertScaleAbs(cvImg->image, mat, 25);
+    cv::imshow("My window", mat);
 }
 
 
