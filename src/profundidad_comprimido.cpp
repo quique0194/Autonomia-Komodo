@@ -1,3 +1,8 @@
+/*
+    Este codigo muestra la forma de:
+        - Leer del sensor de profundidad comprimido
+*/
+
 #include <pthread.h>
 
 #include <iostream>

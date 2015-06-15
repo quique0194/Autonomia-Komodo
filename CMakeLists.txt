@@ -175,16 +175,16 @@ include_directories(
 ## Added by Kike ##
 ###################
 
-add_executable(movimiento src/movimiento.cpp)
-target_link_libraries(movimiento ${catkin_LIBRARIES})
-add_dependencies(movimiento ${catkin_EXPORTED_TARGETS})
+add_executable(odometria_movimiento src/odometria_movimiento.cpp)
+target_link_libraries(odometria_movimiento ${catkin_LIBRARIES})
+add_dependencies(odometria_movimiento ${catkin_EXPORTED_TARGETS})
 
 add_executable(nube_puntos src/nube_puntos.cpp)
 target_link_libraries(nube_puntos ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 add_dependencies(nube_puntos ${catkin_EXPORTED_TARGETS})
 
-add_executable(pared src/pared.cpp)
-target_link_libraries(pared ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(pared ${catkin_EXPORTED_TARGETS})
+add_executable(profundidad_comprimido src/profundidad_comprimido.cpp)
+target_link_libraries(profundidad_comprimido ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_dependencies(profundidad_comprimido ${catkin_EXPORTED_TARGETS})
 
 

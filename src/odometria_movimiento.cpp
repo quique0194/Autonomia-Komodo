@@ -1,3 +1,9 @@
+/*
+    Este codigo muestra la forma de:
+        - Leer los datos de odometria del komodo
+        - Mover al komodo escribiendo en cmd_vel
+*/
+
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
 #include "nav_msgs/Odometry.h"

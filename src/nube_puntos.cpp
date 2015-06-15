@@ -1,3 +1,8 @@
+/*
+    Este codigo muestra la forma de:
+        - Leer la nube de puntos del komodo
+*/
+
 #include <pthread.h>
 
 #include <iostream>
