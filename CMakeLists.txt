@@ -187,4 +187,6 @@ add_executable(profundidad_comprimido src/profundidad_comprimido.cpp)
 target_link_libraries(profundidad_comprimido ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 add_dependencies(profundidad_comprimido ${catkin_EXPORTED_TARGETS})
 
-
+add_executable(seguir_circulo src/seguir_circulo.cpp)
+target_link_libraries(seguir_circulo ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_dependencies(seguir_circulo ${catkin_EXPORTED_TARGETS})
