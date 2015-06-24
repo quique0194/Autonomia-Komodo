@@ -190,3 +190,7 @@ add_dependencies(profundidad_comprimido ${catkin_EXPORTED_TARGETS})
 add_executable(seguir_circulo src/seguir_circulo.cpp)
 target_link_libraries(seguir_circulo ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 add_dependencies(seguir_circulo ${catkin_EXPORTED_TARGETS})
+
+add_executable(webcam_publisher src/webcam_publisher.cpp)
+target_link_libraries(webcam_publisher ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_dependencies(webcam_publisher ${catkin_EXPORTED_TARGETS})
