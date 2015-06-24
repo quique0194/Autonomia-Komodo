@@ -1,6 +1,8 @@
 /*
     Este codigo muestra la forma de:
-        - Leer del sensor de profundidad comprimido
+        - Leer del sensor de profundidad 
+        - Se ejecuta de la siguiente forma:
+            * rosrun autonomia_komodo seguir_circulo _image_transport:=compressedDepth
 */
 
 #include <pthread.h>
