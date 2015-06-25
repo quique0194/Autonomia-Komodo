@@ -42,8 +42,8 @@ namespace utils {
 
 
 void depthCallback (const sensor_msgs::Image::ConstPtr& msg) {
+    std::cout << "depthCallback" << std::endl;
     cv_bridge::CvImageConstPtr cvImg = cv_bridge::toCvShare(msg);
-    depth = cvImg->image; // decimals here
 
     if (circles.size() != 1) {
         dist_to_obstacle = -1;
@@ -53,19 +53,42 @@ void depthCallback (const sensor_msgs::Image::ConstPtr& msg) {
     cv::Point center(cvRound(circles[0][0]), cvRound(circles[0][1]));
     int radius = cvRound(circles[0][2]);
 
+    cv::Mat drawing;
+    cv::convertScaleAbs(cvImg->image, drawing, 25);
+    for( size_t i = 0; i < circles.size(); i++ ) {
+        // circle center
+        cv::circle(drawing, center, 3, cv::Scalar(255,255,255), -1, 8, 0);
+        // circle outline
+        cv::circle(drawing, center, radius, cv::Scalar(255,255,255), 3, 8, 0);
+    }
+    cv::imshow("Depth window", drawing);
+
+    depth = cvImg->image; // decimals here
+
     int random_points = 5;
     double sum = 0;
     for (int i = 0; i < random_points; ++i) {
         double h = utils::uniform() * radius;
         double t = utils::uniform() * 2 * M_PI;
-        sum += depth.at<double>(h*sin(t), h*cos(t));
+        std::cout << "$$$$$ " << cvRound(center.x + h*cos(t)) << std::endl;
+        std::cout << "$$$$$ " << cvRound(center.y + h*sin(t)) << std::endl;
+        std::cout << sizeof(float) << std::endl;
+        float curDepth = depth.at<float>(
+            cvRound(center.y + h*sin(t)),
+            cvRound(center.x + h*cos(t))
+        );
+        std::cout << depth.size() << std::endl;
+        std::cout << "#### " << curDepth << std::endl;
+        sum += curDepth;
     }
     dist_to_obstacle = sum/random_points;
+    std::cout << "sum: " << sum << std::endl;
     std::cout << "Dist to obstacle: " << dist_to_obstacle << std::endl;
 }
 
 
 void imgCallback (const sensor_msgs::Image::ConstPtr& msg) {
+    std::cout << "imgCallback" << std::endl;
     cv_bridge::CvImageConstPtr cvImg = cv_bridge::toCvShare(msg);
     img = cvImg->image; // colors here
     // std::cout << img.size() << std::endl;
@@ -96,6 +119,7 @@ void imgCallback (const sensor_msgs::Image::ConstPtr& msg) {
 
 
 void updateVel () {
+    // std::cout << "updateVel" << std::endl;
     if (circles.size() != 1) {
         vel.linear.x = 0.0;
         vel.angular.z = 0.0;
@@ -106,11 +130,11 @@ void updateVel () {
     cv::Point center(cvRound(circles[0][0]), cvRound(circles[0][1]));
     double errorAngular = img.cols/2.0 - center.x;
     vel.angular.z = pid_angular.calculate(errorAngular);
-    std::cout << "Update vel.angular: " << vel.angular.z << std::endl;
+    // std::cout << "Update vel.angular: " << vel.angular.z << std::endl;
 
-    if (dist_to_obstacle < 1) {
+    if (dist_to_obstacle < 3) {
         vel.linear.x = 0.0;
-        return;
+        vel.angular.z = 0.0;
     } else {
         vel.linear.x = 0.2;
     }
@@ -121,17 +145,35 @@ int main (int argc, char** argv) {
     srand(0);
 
     ros::init(argc, argv, "movimiento");
+
+    char depth_topic[] = "/komodo_1/komodo_1_Asus_Camera/depth/image";
+    char rbg_topic[] = "/komodo_1/komodo_1_Asus_Camera/rgb/image_raw";
+    // char rbg_topic[] = "/webcam/image";
+
     ros::NodeHandle nh;
     ros::Publisher pub = nh.advertise<geometry_msgs::Twist>("/komodo_1/cmd_vel", 10);
+
     image_transport::ImageTransport it(nh);
-    char depth_topic[] = "/komodo_1/komodo_1_Asus_Camera/depth/image";
-    // char rbg_topic[] = "/komodo_1/komodo_1_Asus_Camera/rgb/image_raw";
-    char rbg_topic[] = "/webcam/image";
-    image_transport::Subscriber sub1 = it.subscribe(rbg_topic, 1, imgCallback);
-    image_transport::Subscriber sub2 = it.subscribe(depth_topic, 1, depthCallback);
+    
+    image_transport::Subscriber sub1 = it.subscribe(
+        depth_topic, 10,
+        depthCallback,
+        ros::VoidPtr(),
+        image_transport::TransportHints("compressedDepth")
+    );
+
+    image_transport::Subscriber sub2 = it.subscribe(
+        rbg_topic, 10,
+        imgCallback,
+        ros::VoidPtr(),
+        image_transport::TransportHints("compressed")
+    );
+
+    
     ros::Rate loop_rate(100);
     
     cv::namedWindow("My window");
+    cv::namedWindow("Depth window");
     cv::createTrackbar("Circle param 1", "My window", &circle_param_1, 500, NULL);
     cv::createTrackbar("Circle param 2", "My window", &circle_param_2, 500, NULL);
     cv::startWindowThread();
